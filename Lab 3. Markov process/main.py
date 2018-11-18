@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtCore import QObject, pyqtSlot
-from PyQt5 import uic, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QListWidgetItem
+from PyQt5.QtCore import QObject, pyqtSlot, Qt
+from PyQt5 import uic, QtWidgets, QtGui
+from PyQt5.QtWidgets import QApplication, QWidget, QListWidgetItem,  QTableWidgetItem
 import markov
 
 class MainWindow(QWidget):
@@ -12,6 +12,12 @@ class MainWindow(QWidget):
         self.tableWidgetMatrix.itemChanged.connect(lambda x: self._item_changed(x))
         self.spinBoxStatesCount.setValue(3)
 
+        for i in range(self.ui.tableWidgetMatrix.rowCount()):
+            self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
+            item  = self.tableWidgetMatrix.item(i, i)
+            item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
+            item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
+            
     def _item_changed(self, value):
         try:
             if value.text() != "":
@@ -26,7 +32,6 @@ class MainWindow(QWidget):
         self.ui.listWidgetSolution.clear()
         i = 1
         result = markov.get_system_times(table)
-        print(result)
         if len(result) == 0:
             QtWidgets.QMessageBox.critical(None, "Invalid input", "Please, enter correct intensities!")
         else:
@@ -39,6 +44,12 @@ class MainWindow(QWidget):
         self.ui.tableWidgetMatrix.setRowCount(value)
         self.ui.tableWidgetMatrix.setColumnCount(value)
         self.ui.tableWidgetMatrix.clearContents()
+        for i in range(self.ui.tableWidgetMatrix.rowCount()):
+            self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
+            item  = self.tableWidgetMatrix.item(i, i)
+            item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
+            item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
+            
 
     def _get_matrix_from_table(self):
         res = []
@@ -46,10 +57,14 @@ class MainWindow(QWidget):
             for i in range(self.ui.tableWidgetMatrix.rowCount()):
                 row = []
                 for j in range(self.ui.tableWidgetMatrix.columnCount()):
-                    val = self.ui.tableWidgetMatrix.item(i, j).text() if self.ui.tableWidgetMatrix.item(i, j) else "0"
+                    item  = self.ui.tableWidgetMatrix.item(i, j)
+                    val =  item.text() if item  else "0"
+                    if val == "":
+                        val = "0"
                     row.append(float(val))
                 res.append(row)
-        except ValueError:
+        except KeyError:
+            print(res)
             QtWidgets.QMessageBox.critical(None, "Invalid input", "Please, enter a float number!")
         return res
 
