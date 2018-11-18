@@ -58,9 +58,7 @@ class MainWindow(QWidget):
                 row = []
                 for j in range(self.ui.tableWidgetMatrix.columnCount()):
                     item  = self.ui.tableWidgetMatrix.item(i, j)
-                    val =  item.text() if item  else "0"
-                    if val == "":
-                        val = "0"
+                    val =  item.text() if item and item.text() != "" else "0"
                     row.append(float(val))
                 res.append(row)
         except KeyError:
