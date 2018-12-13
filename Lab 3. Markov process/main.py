@@ -12,11 +12,11 @@ class MainWindow(QWidget):
         self.tableWidgetMatrix.itemChanged.connect(lambda x: self._item_changed(x))
         self.spinBoxStatesCount.setValue(3)
 
-        for i in range(self.ui.tableWidgetMatrix.rowCount()):
-            self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
-            item  = self.tableWidgetMatrix.item(i, i)
-            item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
-            item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
+        # for i in range(self.ui.tableWidgetMatrix.rowCount()):
+        #     self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
+        #     item  = self.tableWidgetMatrix.item(i, i)
+        #     item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
+        #     item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
             
     def _item_changed(self, value):
         try:
@@ -44,11 +44,11 @@ class MainWindow(QWidget):
         self.ui.tableWidgetMatrix.setRowCount(value)
         self.ui.tableWidgetMatrix.setColumnCount(value)
         self.ui.tableWidgetMatrix.clearContents()
-        for i in range(self.ui.tableWidgetMatrix.rowCount()):
-            self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
-            item  = self.tableWidgetMatrix.item(i, i)
-            item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
-            item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
+        # for i in range(self.ui.tableWidgetMatrix.rowCount()):
+        #     self.tableWidgetMatrix.setItem(i, i,  QTableWidgetItem())
+        #     item  = self.tableWidgetMatrix.item(i, i)
+        #     item.setFlags(item.flags() & Qt.ItemIsEnabled & Qt.ItemIsEditable & Qt.ItemIsSelectable)
+        #     item.setBackground(QtGui.QBrush(Qt.Dense6Pattern))
             
 
     def _get_matrix_from_table(self):
