@@ -1,4 +1,5 @@
 import numpy.random as nr
+import numpy as np
 
 
 class Generator(object):
@@ -33,3 +34,14 @@ class ConstGenerator(Generator):
 
     def next(self):
         return self._m
+
+
+class ExponentialGenerator:
+    def __init__(self, lmbd=0.09, random=None):
+        super().__init__()
+        if lmbd < 0:
+            raise ValueError('Параметр должен быть больше 0')
+        self._lambda = 1 / lmbd
+
+    def next(self):
+        return 1 - np.exp(-self._lambda * nr.exponential(self._lambda))

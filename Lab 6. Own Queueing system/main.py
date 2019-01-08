@@ -104,13 +104,13 @@ class MainWindow(QWidget):
         checkin = (checkin_desk0, checkin_desk1, checkin_desk2, checkin_desk3)
 
         passport_control_desk0 = RequestProcessor(UniformGenerator(pcd0_m, pcd0_d, random),
-                                                  'passport0')
+                                                  'passport0', can_drop=True)
         passport_control_desk1 = RequestProcessor(UniformGenerator(pcd1_m, pcd1_d, random),
-                                                  'passport1')
+                                                  'passport1', can_drop=True)
         passport_control = (passport_control_desk0, passport_control_desk1)
 
         customs_control0 = RequestProcessor(UniformGenerator(cc0_m, cc0_d, random),
-                                            'customs0')
+                                            'customs0', can_drop=True)
         customs_control = (customs_control0,)
 
         plane = RequestProcessor(ConstGenerator(0), 'plane', is_exit=True)

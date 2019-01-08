@@ -1,4 +1,5 @@
 from collections import deque
+from generator import ExponentialGenerator
 
 
 class QueueSystemError(Exception):
@@ -15,6 +16,7 @@ class Request(object):
     def __init__(self, creation_time):
         self._creation_time = creation_time
         self._processing_start = self._processing_end = 0
+        self._dropped = False
 
     @property
     def creation_time(self):
@@ -93,7 +95,7 @@ class Device(object):
     def emit_request(self, request):
         potential_receivers = [receiver for receiver in self._receivers if
                                receiver.can_receive_request()]
-        if not potential_receivers:
+        if not potential_receivers or request._dropped:
             self._dropped_requests += 1
             return None
         potential_receiver = min(potential_receivers, key=lambda rcvr: rcvr.occupation)
@@ -134,7 +136,8 @@ class RequestProcessor(Device):
     1)  Request processing is always performed over a request in queue at index 0 (zero). Therefore,
         real queued request count is _queued_requests - 1.
     """
-    def __init__(self, generator, name, *, max_queue_size=float('inf'), is_exit=False):
+    def __init__(self, generator, name, *, max_queue_size=float('inf'), 
+                is_exit=False, can_drop=False):
         super().__init__(generator, name)
         self._queue = deque()
         self._max_queue_size = max_queue_size
@@ -144,6 +147,12 @@ class RequestProcessor(Device):
         self._idle_time = self._active_time = 0
         self._idle = True
         self._is_exit = is_exit
+        self._can_drop = can_drop
+        if can_drop:
+            self.drop_prob_gen = ExponentialGenerator()
+        else:
+            self.drop_prob_gen = None
+        
 
     @property
     def processed_requests(self):
@@ -189,6 +198,7 @@ class RequestProcessor(Device):
         return self._queued_requests
 
     def receive_request(self, request):
+        
         self._queue.append(request)
         self._queued_requests += 1
         if self._idle:
@@ -201,6 +211,7 @@ class RequestProcessor(Device):
         else:
             self._queue.pop()
             self._queued_requests -= 1
+            self._dropped_requests += 1
             raise QueueSystemError('Receiver is busy. Emitter should check availability with '
                                    'can_receive_request()')
 
@@ -227,8 +238,14 @@ class RequestProcessor(Device):
                 self._queue[0].processing_start = current_time
                 self._next_event_time += self.generate_time()
 
+            new_request = Request(current_time)
+            if self._can_drop:
+                prob = self.drop_prob_gen.next()
+                if prob < 0.9:
+                    new_request._dropped = True
+
             if not self._is_exit:
-                self.emit_request(Request(current_time))
+                self.emit_request(new_request)
 
     def action(self):
         if not self._receivers and not self._is_exit:
