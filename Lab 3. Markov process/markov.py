@@ -23,6 +23,15 @@ def build_augmentation_matrix(count):
 def get_system_times(matrix):
     try:
         res = numpy.linalg.solve(build_coeff_matrix(matrix), build_augmentation_matrix(len(matrix)))
+        time_res = []
+        for i in range(len(matrix)):
+            sum1 = 0
+            sum2 = 0
+            for j in range(len(matrix[0])):
+                sum1 += matrix[i][j]
+                sum2 += matrix[j][i]
+            time_res.append((sum1 - sum2) / res[i])
     except LinAlgError:
         res = []
-    return res
+    print(res)
+    return time_res
